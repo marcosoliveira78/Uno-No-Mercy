@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNO No Mercy - Regras Interativas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-button.active {
+            background-color: #EF4444; /* red-500 */
+            color: white;
+        }
+        .nav-button {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }8
+        .card-item {
+            border: 1px solid #d1d5db; /* gray-300 */
+            background-color: white;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .filter-button.active {
+            background-color: #DC2626; /* red-700 */
+            color: white;
+        }
+         /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #EF4444; /* red-500 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #DC2626; /* red-700 */
+        }
+        /* Specific highlight color for UNO */
+        .highlight-uno {
+            color: #DC2626; /* red-700 */
+            font-weight: bold;
+        }
+        .highlight-uno-dark {
+            color: #991B1B; /* red-800 */
+            font-weight: bold;
+        }
+
+        @media print {
+            @page {
+                size: A4; /* Define o tamanho da página para A4 */
+                margin: 1cm; /* Define margens para a impressão */
+            }
+            nav, footer, .filter-button, .nav-button[data-target="print-pdf"] {
+                display: none !important;
+            }
+            main {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            section {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 1rem !important;
+                margin-bottom: 0 !important;
+                page-break-before: always; /* Force new page for each section */
+            }
+            #visao-geral {
+                page-break-before: avoid; /* Don't force a page break before the very first section */
+            }
+            .content-section {
+                display: block !important; /* Ensure all sections are visible for printing */
+            }
+            /* Specific styling for cards-acao section for print */
+            #cards-acao #cards-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr); /* 2 columns for print */
+                gap: 1rem; /* Adjust gap for print */
+            }
+            #cards-acao .card-item {
+                padding: 0.5rem; /* Reduce padding for print */
+                font-size: 0.8em; /* Optionally reduce font size slightly */
+            }
+            #cards-acao .card-item h4 {
+                font-size: 1.1em; /* Adjust heading size */
+            }
+            #cards-acao .card-item p {
+                font-size: 0.75em; /* Adjust description size */
+            }
+            /* Force page break after every 10 cards in print */
+            .print-page-break-after-10 {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body class="bg-stone-100 text-stone-800 min-h-screen flex flex-col">
+
+    <header class="bg-red-700 text-white p-6 shadow-lg">
+        <div class="container mx-auto max-w-5xl text-center">
+            <h1 class="text-4xl font-bold">🃏 UNO No Mercy 🔥</h1>
+            <p class="text-lg mt-2">Guia Interativo de Regras</p>
+        </div>
+    </header>
+
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto max-w-5xl flex flex-wrap justify-center p-2 space-x-1 sm:space-x-2">
+            <button class="nav-button px-3 py-2 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-medium hover:bg-red-500 hover:text-white active" data-target="visao-geral">Visão Geral</button>
+            <button class="nav-button px-3 py-2 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-medium hover:bg-red-500 hover:text-white" data-target="componentes">Componentes</button>
+            <button class="nav-button px-3 py-2 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-medium hover:bg-red-500 hover:text-white" data-target="preparacao">Preparação</button>
+            <button class="nav-button px-3 py-2 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-medium hover:bg-red-500 hover:text-white" data-target="como-jogar">Como Jogar</button>
+            <button class="nav-button px-3 py-2 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-medium hover:bg-red-500 hover:text-white" data-target="regras-especiais">Regras Especiais</button>
+            <button class="nav-button px-3 py-2 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-medium hover:bg-red-500 hover:text-white" data-target="cartas-acao">Cartas de Ação</button>
+            <button class="nav-button px-3 py-2 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-medium hover:bg-red-500 hover:text-white" data-target="cartas-curingas">Cartas Curingas</button>
+            <button class="nav-button px-3 py-2 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-medium hover:bg-red-500 hover:text-white" data-target="pontuacao">Pontuação</button>
+            <button class="nav-button px-3 py-2 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-medium bg-red-600 text-white hover:bg-red-700" data-target="print-pdf">Gerar PDF</button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto max-w-4xl p-4 sm:p-6 flex-grow">
+        <section id="visao-geral" class="content-section active bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-semibold text-red-700 mb-6 border-b-2 border-red-200 pb-2">🎯 Visão Geral e Objetivo do Jogo</h2>
+            <p class="mb-4 text-lg leading-relaxed">
+                Bem-vindo ao <span class="highlight-uno-dark">UNO No Mercy</span>, a versão mais intensa e desafiadora do clássico jogo de cartas! Prepare-se para uma experiência onde a estratégia e a sorte se encontram em um campo de batalha sem misericórdia.
+            </p>
+            <p class="text-stone-700 leading-relaxed space-y-3">
+                O <span class="highlight-uno-dark">objetivo principal</span> é duplo: você pode vencer sendo o <span class="highlight-uno-dark">primeiro a se livrar de todas as cartas</span> em sua mão, ou pode <span class="highlight-uno-dark">derrotar todos os seus adversários</span> até ser o último jogador em pé. A jogabilidade é a mesma do <span class="highlight-uno-dark">UNO clássico</span>: combine por cor, número ou símbolo. No entanto, <span class="highlight-uno-dark">4 regras especiais</span> e <span class="highlight-uno-dark">6 cartas de ação duronas</span> foram adicionadas para intensificar o jogo. Como sempre, ao jogar sua última carta, você ainda deve gritar <span class="highlight-uno-dark">"UNO!"</span>.
+            </p>
+        </section>
+
+        <section id="componentes" class="content-section bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-semibold text-red-700 mb-6 border-b-2 border-red-200 pb-2">📦 Componentes do Jogo</h2>
+            <p class="mb-4 text-lg leading-relaxed">
+                Para mergulhar na intensidade de <span class="highlight-uno-dark">UNO No Mercy</span>, você precisará dos seguintes componentes:
+            </p>
+            <ul class="list-disc list-inside space-y-3 text-stone-700 leading-relaxed">
+                <li>
+                    O jogo é composto por um total de <span class="highlight-uno-dark">168 cartas</span>. Este baralho expandido inclui as cartas numéricas tradicionais, diversas cartas de ação coloridas e um conjunto de cartas curingas ainda mais poderosas, que adicionam novas camadas de estratégia e reviravoltas ao jogo.
+                </li>
+            </ul>
+        </section>
+
+        <section id="preparacao" class="content-section bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-semibold text-red-700 mb-6 border-b-2 border-red-200 pb-2">🛠️ Preparação para a Partida</h2>
+            <p class="mb-4 text-lg leading-relaxed">
+                Antes de iniciar a batalha em <span class="highlight-uno-dark">UNO No Mercy</span>, siga estes passos para garantir que tudo esteja pronto para a ação:
+            </p>
+            <ol class="list-decimal list-inside space-y-3 text-stone-700 leading-relaxed">
+                <li>
+                    <span class="highlight-uno-dark">Escolha o Distribuidor:</span> Decida quem será o primeiro a distribuir as cartas. Em seguida, <span class="highlight-uno-dark">embaralhe bem todas as cartas</span>. Dica: Como há muitas cartas (168!), se for difícil embaralhar tudo de uma vez, sinta-se à vontade para dividir o baralho entre vários jogadores para embaralhar em partes e depois juntar.
+                </li>
+                <li>
+                    <span class="highlight-uno-dark">Distribuição Inicial:</span> Dê <span class="highlight-uno-dark">7 cartas para cada jogador</span>. Estas serão as cartas iniciais com as quais cada um começará a partida.
+                </li>
+                <li>
+                    <span class="highlight-uno-dark">Pilha de Compras:</span> Coloque as cartas restantes <span class="highlight-uno-dark">viradas para baixo</span> no centro da mesa. Esta será a <span class="highlight-uno-dark">Pilha de Compras</span>, de onde os jogadores pegarão cartas durante o jogo.
+                </li>
+                <li>
+                    <span class="highlight-uno-dark">Pilha de Descarte:</span> Pegue a carta de cima da <span class="highlight-uno-dark">Pilha de Compras</span> e coloque-a <span class="highlight-uno-dark">virada para cima</span> ao lado da Pilha de Compras para formar a <span class="highlight-uno-dark">Pilha de Descarte</span>. Se esta primeira carta for uma <span class="highlight-uno-dark">Carta de Ação</span>, ignore-a e vire a próxima carta da Pilha de Compras até que uma carta numérica seja revelada para iniciar o jogo.
+                </li>
+                <li>
+                    <span class="highlight-uno-dark">Início do Jogo:</span> O jogador à <span class="highlight-uno-dark">esquerda de quem distribuiu as cartas</span> joga primeiro. O jogo continua no <span class="highlight-uno-dark">sentido horário</span>.
+                </li>
+            </ol>
+        </section>
+
+        <section id="como-jogar" class="content-section bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-semibold text-red-700 mb-6 border-b-2 border-red-200 pb-2">🎲 Como Jogar UNO No Mercy</h2>
+            <p class="mb-6 text-lg leading-relaxed">
+                A dinâmica de <span class="highlight-uno-dark">UNO No Mercy</span> é familiar, mas com reviravoltas que exigem atenção e estratégia.
+            </p>
+            
+            <div class="space-y-6 text-stone-700 leading-relaxed">
+                <div>
+                    <h3 class="text-2xl font-medium text-red-600 mb-3">Sua Vez de Jogar</h3>
+                    <p>
+                        Na sua vez, seu objetivo é se livrar de suas cartas jogando <span class="highlight-uno-dark">uma carta na Pilha de Descarte</span>. Você só poderá jogar uma carta se ela corresponder a pelo menos uma característica da carta no topo da Pilha de Descarte: <span class="highlight-uno-dark">cor, número ou símbolo</span>.
+                    </p>
+                    <p>
+                        <span class="font-bold text-green-700">Se você TIVER uma carta correspondente</span> na sua mão, poderá <span class="font-bold text-green-700">JOGÁ-LA</span> na Pilha de Descarte.
+                    </p>
+                    <p>
+                        <span class="font-bold text-red-700">Se você NÃO TIVER uma carta correspondente</span>, <span class="font-bold text-red-700">DEVERÁ comprar cartas</span> da Pilha de Compras <span class="font-bold text-red-700">ATÉ COMPRAR UMA CARTA QUE POSSA JOGAR</span>. Em seguida, você deve descartar essa carta.
+                    </p>
+                    <p class="text-sm text-stone-600 italic">
+                        *Observação: Se não houver cartas na Pilha de Compras, embaralhe novamente a Pilha de Descarte para formar uma nova Pilha de Compras.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-red-600 mb-3">Cartas de Ação</h3>
+                    <p>
+                        Se a carta que você jogou for uma <span class="highlight-uno-dark">Carta de Ação</span> (ou uma Carta Curinga), ela fará algo especial! Os efeitos dessas cartas são aplicados imediatamente e podem mudar drasticamente o rumo da rodada. Detalhes sobre cada Carta de Ação e Curinga são encontrados nas seções "Cartas de Ação" e "Cartas Curingas" abaixo.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-red-600 mb-3">Fim da Sua Vez</h3>
+                    <p>
+                        Quando sua vez acabar (após jogar uma carta ou comprar e descartar), o jogo continua com o <span class="highlight-uno-dark">próximo jogador</span> na ordem atual.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-red-600 mb-3">Gritar "UNO!"</h3>
+                    <p>
+                        Quando você tiver <span class="highlight-uno-dark">apenas 1 carta na mão</span>, você deve gritar <span class="highlight-uno-dark">"UNO!"</span> para alertar os outros jogadores que você está prestes a ganhar!
+                    </p>
+                    <p>
+                        No entanto, se alguém perceber e gritar <span class="highlight-uno-dark">"UNO!" antes de você</span> (e antes que o próximo jogador comece a vez), você deverá <span class="highlight-uno-dark">comprar 2 cartas</span> como penalidade.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-red-600 mb-3">Como Vencer</h3>
+                    <p>
+                        O jogador que jogar a <span class="highlight-uno-dark">última carta</span>, ganha a rodada. Como alternativa, e esta é a essência do "No Mercy", se <span class="highlight-uno-dark">todos os outros jogadores forem derrotados</span> (devido à Regra da Misericórdia, explicada na seção de Regras Especiais), você também ganha! É hora de embaralhar as cartas e jogar novamente!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="regras-especiais" class="content-section bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-semibold text-red-700 mb-6 border-b-2 border-red-200 pb-2">🚨 Regras Especiais de UNO No Mercy</h2>
+            <p class="mb-4 text-lg leading-relaxed">
+                <span class="highlight-uno-dark">UNO No Mercy</span> introduz regras que elevam o nível de estratégia e a intensidade do jogo:
+            </p>
+            <div class="space-y-6 text-stone-700 leading-relaxed">
+                <div>
+                    <h3 class="text-2xl font-medium text-red-600 mb-3">Empilhamento (Stacking)</h3>
+                    <p>
+                        Se alguém jogar uma <span class="highlight-uno-dark">Carta Comprar</span> (+2, +4, +6, +10), você pode <span class="highlight-uno-dark">empilhar a penalidade</span> jogando uma Carta Comprar da sua mão de <span class="highlight-uno-dark">valor igual ou maior</span>. Se fizer isso, a carta que você jogou aumenta a penalidade total do próximo jogador.
+                    </p>
+                    <p>
+                        Por exemplo, se alguém jogar uma carta +4 em você, você poderá jogar uma carta +6 e o próximo jogador será forçado a comprar 10 cartas (4+6). Isso continua até que alguém <span class="highlight-uno-dark">não consiga jogar uma Carta Comprar</span> igual ou superior ao valor da última carta jogada. Esse jogador pega a <span class="highlight-uno-dark">penalidade total de todas as Cartas Comprar empilhadas</span>. Ai!
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-red-600 mb-3">Misericórdia (Mercy Rule)</h3>
+                    <p>
+                        Se um jogador tiver <span class="highlight-uno-dark">25 cartas ou mais em sua mão</span>, ele estará <span class="highlight-uno-dark">fora do jogo</span>. As cartas dele devem ser deixadas separadas até que o baralho de compras acabe e seja necessário adicionar mais cartas, momento em que as cartas do jogador derrotado podem ser reembaralhadas na pilha de descarte para formar uma nova pilha de compras.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-red-600 mb-3">7 Troca 7 (Swap 7)</h3>
+                    <p>
+                        Ao jogar uma <span class="highlight-uno-dark">carta 7 de qualquer cor</span>, você <span class="highlight-uno-dark">DEVE trocar sua mão</span> completa de cartas com a de <span class="highlight-uno-dark">outro jogador da sua escolha</span>. O jogo continua na ordem atual.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-red-600 mb-3">0 Passa 0 (Pass 0)</h3>
+                    <p>
+                        Ao jogar uma <span class="highlight-uno-dark">carta 0 de qualquer cor</span>, <span class="highlight-uno-dark">TODOS os jogadores devem passar a mão</span> para o próximo jogador na ordem da jogada. Isso significa que a mão que você tinha antes de jogar o 0 será passada para o jogador à sua esquerda (se o jogo estiver no sentido horário), e você receberá a mão do jogador à sua direita.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="cartas-acao" class="content-section bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-semibold text-red-700 mb-4 border-b-2 border-red-200 pb-2">✨ Cartas de Ação Coloridas</h2>
+            <p class="mb-4 text-lg leading-relaxed">
+                As Cartas de Ação Coloridas adicionam reviravoltas estratégicas ao jogo, forçando os oponentes a reagir às suas jogadas.
+            </p>
+            
+            <div class="mb-6 flex flex-wrap justify-center gap-2">
+                <button class="filter-button px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600 active" data-filter="todos">Todas</button>
+                <button class="filter-button px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600" data-filter="comprar">Comprar</button>
+                <button class="filter-button px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600" data-filter="pular">Pular</button>
+                <button class="filter-button px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600" data-filter="inverter">Inverter</button>
+                <button class="filter-button px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600" data-filter="descartar">Descartar</button>
+            </div>
+
+            <div id="action-cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            </div>
+        </section>
+
+        <section id="cartas-curingas" class="content-section bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-semibold text-red-700 mb-4 border-b-2 border-red-200 pb-2">🌈 Cartas Curingas</h2>
+            <p class="mb-4 text-lg leading-relaxed">
+                As Cartas Curingas são as mais poderosas do baralho, permitindo mudar a cor do jogo e aplicar efeitos devastadores.
+            </p>
+            
+            <div class="mb-6 flex flex-wrap justify-center gap-2">
+                <button class="filter-button px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600 active" data-filter="todos">Todas</button>
+                <button class="filter-button px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600" data-filter="comprar-curinga">Comprar Curinga</button>
+                <button class="filter-button px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600" data-filter="inverter-comprar">Inverter/Comprar</button>
+                <button class="filter-button px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600" data-filter="roleta">Roleta Colorida</button>
+            </div>
+
+            <div id="wild-cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            </div>
+        </section>
+
+        <section id="pontuacao" class="content-section bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-semibold text-red-700 mb-6 border-b-2 border-red-200 pb-2">📊 Pontuação (Método de Vitória Opcional)</h2>
+            <p class="mb-4 text-lg leading-relaxed">
+                Manter a pontuação é um <span class="highlight-uno-dark">método de vitória opcional</span> que adiciona uma camada estratégica ao jogo. Quando um jogador vence uma rodada (seja por se livrar de todas as cartas ou por derrotar todos os oponentes), ele recebe pontos com base nas cartas restantes nas mãos dos oponentes.
+            </p>
+            <p class="text-stone-700 leading-relaxed space-y-3">
+                As cartas têm os seguintes valores:
+            </p>
+            <ul class="list-disc list-inside space-y-2 text-stone-700 leading-relaxed">
+                <li><span class="highlight-uno-dark">Todas as cartas numéricas (0 a 9):</span> Valor da carta (ex: um '5' vale 5 pontos).</li>
+                <li><span class="highlight-uno-dark">Qualquer Carta de Ação Colorida:</span> 20 pontos
+                    <ul class="list-circle list-inside ml-6 mt-1">
+                        <li>Pular, Inverter, Comprar 2, Comprar 4, Descartar Tudo, Pular a Vez de Todos.</li>
+                    </ul>
+                </li>
+                <li><span class="highlight-uno-dark">Qualquer Carta de Ação Curinga:</span> 50 pontos
+                    <ul class="list-circle list-inside ml-6 mt-1">
+                        <li>Curinga Inverter Comprar 4, Curinga Comprar 6, Curinga Comprar 10, Curinga Roleta Colorida.</li>
+                    </ul>
+                </li>
+            </ul>
+            <p class="mt-4 text-stone-700 leading-relaxed">
+                O jogo pode ser jogado por um número predefinido de rodadas, ou até que um jogador atinja uma pontuação total específica, como 500 pontos. O jogador que atingir essa pontuação primeiro vence o jogo.
+            </p>
+        </section>
+    </main>
+
+    <footer class="bg-red-800 text-red-200 text-center p-4 mt-8">
+        <p>&copy; UNO No Mercy - Regras Interativas. Desenvolvido por Carol Oliveira. Prepare-se para a batalha!</p>
+    </footer>
+
+    <script>
+        const navButtons = document.querySelectorAll('.nav-button');
+        const contentSections = document.querySelectorAll('.content-section');
+        const actionCardsContainer = document.getElementById('action-cards-container');
+        const wildCardsContainer = document.getElementById('wild-cards-container');
+        const filterActionButtons = document.querySelectorAll('#cartas-acao .filter-button');
+        const filterWildButtons = document.querySelectorAll('#cartas-curingas .filter-button');
+
+        const actionCardsData = [
+            { name: "Comprar Duas", quantity: "N/A", type: "comprar", description: "O próximo jogador deve comprar 2 cartas e perde a vez.", icon: "➕2️⃣" },
+            { name: "Pular", quantity: "N/A", type: "pular", description: "Quando jogada, o próximo jogador na ordem atual perde a vez.", icon: "🚫" },
+            { name: "Inverter", quantity: "N/A", type: "inverter", description: "Quando jogada, a direção da rodada é invertida. Se a rodada estava no sentido horário, ela mudará para o sentido anti-horário, e vice-versa. Com apenas dois jogadores, a carta Inverter pula a vez de outro jogador, permitindo que você jogue mais uma rodada.", icon: "🔄" },
+            { name: "Descartar Tudo", quantity: "N/A", type: "descartar", description: "Descarte todas as cartas na sua mão da mesma cor da carta Descartar Tudo. Coloque as cartas extras sob a carta Descartar Tudo.", icon: "🗑️" },
+            { name: "Comprar Quatro", quantity: "N/A", type: "comprar", description: "Quando essa carta é jogada, o próximo jogador deve comprar 4 cartas e perde a vez.", icon: "➕4️⃣" },
+            { name: "Pular a Vez de Todos", quantity: "N/A", type: "pular", description: "Pula a vez de todos os outros jogadores e começa uma nova jogada.", icon: "⏩" }
+        ];
+
+        const wildCardsData = [
+            { name: "Curinga Inverter Comprar 4", quantity: "N/A", type: "inverter-comprar", description: "Inverte a direção do jogo e, em seguida, o próximo jogador na nova direção deve comprar 4 cartas e perder a vez. Com apenas dois jogadores, esta carta pula a vez do outro jogador e faz VOCÊ comprar 4 cartas! Você pode usar a regra de empilhamento para aplicar a penalidade de volta em outro jogador.", icon: "🔄➕4️⃣" },
+            { name: "Curinga Comprar 6", quantity: "N/A", type: "comprar-curinga", description: "O próximo jogador deve comprar 6 cartas e perder a vez.", icon: "➕6️⃣" },
+            { name: "Curinga Comprar 10", quantity: "N/A", type: "comprar-curinga", description: "O próximo jogador deve comprar 10 cartas e perder a vez.", icon: "➕🔟" },
+            { name: "Curinga Roleta Colorida", quantity: "N/A", type: "roleta", description: "O próximo jogador escolhe uma cor. Depois, ele deve revelar as cartas uma de cada vez da pilha de compras até conseguir comprar uma carta de cor escolhida (Cartas Curinga NÃO contam). Em seguida, eles devem adicionar todas as cartas reveladas às suas mãos e perder a vez.", icon: "🎲🎨" }
+        ];
+
+        function displayCards(cardsData, container, filter = 'todos') {
+            container.innerHTML = '';
+            const filteredCards = filter === 'todos' ? cardsData : cardsData.filter(card => card.type === filter);
+
+            if (filteredCards.length === 0) {
+                container.innerHTML = `<p class="col-span-full text-center text-stone-600">Nenhuma carta encontrada para esta categoria.</p>`;
+                return;
+            }
+
+            filteredCards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card-item p-4 rounded-lg shadow-md space-y-2';
+
+                // Add page break class for print after every 10 cards
+                if ((index + 1) % 10 === 0) {
+                    cardElement.classList.add('print-page-break-after-10');
+                }
+
+                let categoryColor = 'bg-gray-200';
+                // Note: UNO cards are primarily identified by their effect type, not a "categoryForFilter" like in Batalha dos Dados.
+                // The 'type' property is used for filtering here.
+                if (card.type === 'comprar') categoryColor = 'bg-red-100 border-red-300';
+                else if (card.type === 'pular') categoryColor = 'bg-blue-100 border-blue-300';
+                else if (card.type === 'inverter') categoryColor = 'bg-yellow-100 border-yellow-300';
+                else if (card.type === 'descartar') categoryColor = 'bg-green-100 border-green-300';
+                // Wild card types
+                else if (card.type === 'comprar-curinga') categoryColor = 'bg-purple-100 border-purple-300';
+                else if (card.type === 'inverter-comprar') categoryColor = 'bg-orange-100 border-orange-300';
+                else if (card.type === 'roleta') categoryColor = 'bg-pink-100 border-pink-300';
+
+
+                cardElement.innerHTML = `
+                    <h4 class="text-xl font-semibold text-red-700">${card.name}</h4>
+                    <p class="text-sm ${categoryColor.split(' ')[0]} text-gray-700 p-1 rounded inline-block">${card.icon} ${card.description.split('.')[0]} (${card.quantity} cartas)</p>
+                    <p class="text-stone-600">${card.description}</p>
+                `;
+                container.appendChild(cardElement);
+            });
+        }
+
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.dataset.target;
+                
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                if (targetId === 'print-pdf') {
+                    window.print();
+                } else {
+                    contentSections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                        } else {
+                            section.classList.remove('active');
+                        }
+                    });
+                    // Re-display cards when navigating to card sections
+                    if (targetId === 'cartas-acao') {
+                        displayCards(actionCardsData, actionCardsContainer); 
+                    } else if (targetId === 'cartas-curingas') {
+                        displayCards(wildCardsData, wildCardsContainer);
+                    }
+                }
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        filterActionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const filterType = button.dataset.filter;
+                filterActionButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                displayCards(actionCardsData, actionCardsContainer, filterType);
+            });
+        });
+
+        filterWildButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const filterType = button.dataset.filter;
+                filterWildButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                displayCards(wildCardsData, wildCardsContainer, filterType);
+            });
+        });
+        
+        // Initial display for the active section (Visão Geral)
+        // No cards to display initially for Visão Geral, but if the user starts on a card section, it will display.
+        // For now, let's ensure cards are displayed if the user navigates to those sections.
+    </script>
+</body>
+</html>
+
